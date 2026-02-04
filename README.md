@@ -2,6 +2,8 @@
 
 A complete, enterprise-grade WordPress infrastructure deployment using AWS CloudFormation with High Availability, Security, and Global CDN.
 
+![Enterprise WordPress Infrastructure on AWS](AWS-WordPress-Master-Infrastructure-Diagram.png)
+
 ## 🏗️ Architecture Overview
 
 This infrastructure provides a production-ready WordPress hosting solution with:
@@ -13,6 +15,27 @@ This infrastructure provides a production-ready WordPress hosting solution with:
 - **Global CDN**: CloudFront distribution with custom security headers
 - **Security**: Private subnets, NAT Gateways, security groups
 - **SSL/TLS**: Automatic HTTPS redirection via CloudFront
+
+### 🎯 Key Architecture Features
+
+#### **Traffic Flow:**
+1. **Users** → **CloudFront CDN** (Global edge locations)
+2. **CloudFront** → **Application Load Balancer** (with custom security headers)
+3. **ALB** → **Auto Scaling Group** → **WordPress EC2 instances** (private subnets)
+4. **EC2 instances** → **RDS Multi-AZ** (database) + **EFS** (shared storage)
+
+#### **High Availability:**
+- **Cross-AZ Redundancy**: Resources distributed across us-east-1a and us-east-1c
+- **Auto Scaling**: 2-4 instances with health checks and automatic replacement
+- **Database Failover**: RDS Multi-AZ with synchronous replication
+- **NAT Gateway Redundancy**: One per AZ for true fault tolerance
+
+#### **Security:**
+- **Private Subnets**: WordPress instances not directly accessible from internet
+- **Custom Headers**: CloudFront sends `X-Custom-Secret` header, ALB validates it
+- **Security Groups**: Layered network security with least-privilege access
+- **HTTPS Enforcement**: Automatic SSL/TLS via CloudFront
+- **403 Forbidden**: Direct ALB access returns standard forbidden response
 
 ## 💰 Cost Estimate
 

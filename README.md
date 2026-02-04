@@ -2,14 +2,33 @@
 
 A complete, enterprise-grade WordPress infrastructure deployment using AWS CloudFormation with High Availability, Security, and Global CDN.
 
-![Enterprise WordPress Infrastructure on AWS](AWS-WordPress-Master-Infrastructure-Diagram.png)
+## 📊 Current Deployed Architecture
+
+![Current WordPress Infrastructure on AWS](Current-WordPress-Infrastructure-Actual.png)
+
+> **Note**: The above diagram shows the **currently deployed infrastructure** which uses individual EC2 instances. The CloudFormation template in this repository will deploy an Auto Scaling Group version for enhanced automation.
 
 ## 🏗️ Architecture Overview
+
+### 🎯 Current Deployment vs. CloudFormation Template
+
+**Current Deployment** (shown in diagram above):
+- **2 Individual EC2 instances**: Manually created and optimized
+  - `i-0ab1db477067d7989` (t3.micro) in us-east-1a 
+  - `i-0727d928dd2cd2df2` (t2.micro) in us-east-1c
+- **Manual High Availability**: Cross-AZ redundancy through individual instances
+- **Shared Resources**: RDS Multi-AZ and EFS for both instances
+- **Optimized NAT Gateways**: One per AZ for true redundancy
+
+**CloudFormation Template** (in this repository):
+- **Auto Scaling Group**: 2-4 instances with automated scaling
+- **Launch Template**: Standardized instance deployment
+- **Automated HA**: Built-in health checks and replacement
+- **Infrastructure as Code**: Repeatable, version-controlled deployment
 
 This infrastructure provides a production-ready WordPress hosting solution with:
 
 - **High Availability**: Multi-AZ deployment across 2 Availability Zones
-- **Auto Scaling**: 2-4 EC2 instances with Application Load Balancer
 - **Database**: RDS MySQL Multi-AZ with automatic failover
 - **Shared Storage**: EFS file system for wp-content/uploads
 - **Global CDN**: CloudFront distribution with custom security headers
@@ -19,16 +38,20 @@ This infrastructure provides a production-ready WordPress hosting solution with:
 ### 🎯 Key Architecture Features
 
 #### **Traffic Flow:**
-1. **Users** → **CloudFront CDN** (Global edge locations)
-2. **CloudFront** → **Application Load Balancer** (with custom security headers)
-3. **ALB** → **Auto Scaling Group** → **WordPress EC2 instances** (private subnets)
-4. **EC2 instances** → **RDS Multi-AZ** (database) + **EFS** (shared storage)
+1. **Users** → **CloudFront CDN** (d1rsle46z5ormm.cloudfront.net)
+2. **CloudFront** → **Application Load Balancer** (wp-alb with custom security headers)
+3. **ALB** → **Individual WordPress EC2 instances** (private subnets)
+   - `i-0ab1db477067d7989` (t3.micro) in us-east-1a - IP: 10.0.5.229
+   - `i-0727d928dd2cd2df2` (t2.micro) in us-east-1c - IP: 10.0.3.35
+4. **EC2 instances** → **RDS Multi-AZ** (wordpress-db) + **EFS** (fs-0cf1a9cb3da9197f4)
 
-#### **High Availability:**
-- **Cross-AZ Redundancy**: Resources distributed across us-east-1a and us-east-1c
-- **Auto Scaling**: 2-4 instances with health checks and automatic replacement
+#### **High Availability (Current Setup):**
+- **Cross-AZ Redundancy**: Individual instances in us-east-1a and us-east-1c
+- **Manual HA Configuration**: Both instances configured with shared RDS and EFS
 - **Database Failover**: RDS Multi-AZ with synchronous replication
-- **NAT Gateway Redundancy**: One per AZ for true fault tolerance
+- **NAT Gateway Redundancy**: Optimized placement (one per AZ)
+  - `nat-08455b15835f86909` in us-east-1a public subnet
+  - `nat-0c5b2f09be62ce951` in us-east-1c public subnet
 
 #### **Security:**
 - **Private Subnets**: WordPress instances not directly accessible from internet

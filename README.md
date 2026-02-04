@@ -39,11 +39,14 @@ This infrastructure provides a production-ready WordPress hosting solution with:
 
 #### **Traffic Flow:**
 1. **Users** → **CloudFront CDN** (d1rsle46z5ormm.cloudfront.net)
-2. **CloudFront** → **Application Load Balancer** (wp-alb with custom security headers)
+2. **CloudFront** → **Internet Gateway** → **Application Load Balancer** (wp-alb)
 3. **ALB** → **Individual WordPress EC2 instances** (private subnets)
    - `i-0ab1db477067d7989` (t3.micro) in us-east-1a - IP: 10.0.5.229
    - `i-0727d928dd2cd2df2` (t2.micro) in us-east-1c - IP: 10.0.3.35
 4. **EC2 instances** → **RDS Multi-AZ** (wordpress-db) + **EFS** (fs-0cf1a9cb3da9197f4)
+
+**Outbound Traffic Flow:**
+- **EC2 instances** → **NAT Gateways** → **Internet Gateway** → **Internet**
 
 #### **High Availability (Current Setup):**
 - **Cross-AZ Redundancy**: Individual instances in us-east-1a and us-east-1c

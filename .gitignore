@@ -1,0 +1,42 @@
+# AWS and Sensitive Files
+*.pem
+*.key
+.aws/
+aws-credentials
+credentials
+config
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# PowerShell and Windows
+*.ps1.bak
+Thumbs.db
+Desktop.ini
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# CloudFormation Outputs (if any)
+stack-outputs.json
+deployment-outputs.json
+
+# Backup Files
+backup/
+old/
+archive/
